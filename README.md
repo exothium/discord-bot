@@ -13,10 +13,21 @@ yarn install
 ```
 
 # Environment variables
-To make this bot work, you'll need to set up some environment variables first, you can create a .env file inside your repository with the following variables (as strings):
+To make this bot work, you'll need to set up some variables first, you can create a config.json file inside the root of your repository with the following JSON as an example:
 
-    - DISCORD_TOKEN: *Your Discord bot token*
-    - GUILD_ID: *Your Server ID*
+```json
+{
+    "DB_HOST": "string",
+    "DB_USER": "string",
+    "DB_PORT": 1234,
+    "DB_PASSWORD": "string",
+    "DB_SCHEMA": "string",
+
+    "TWITTER_TOKEN": "string",
+    "TWEET_ID": "string",
+    "TWITTER_PAGE_ID": "string",
     
-    - TWITTER_TOKEN: *Your Twitter API Bearer Token*
-    - TWEET_ID: *Your tweet id which can be found on the URL itself*
+    "DISCORD_TOKEN": "string",
+    "GUILD_ID": "string"
+}
+```
