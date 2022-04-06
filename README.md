@@ -12,7 +12,7 @@ npm install
 yarn install
 ```
 
-# Environment variables
+# Variables
 To make this bot work, you'll need to set up some variables first, you can create a config.json file inside the root of your repository with the following JSON as an example:
 
 ```json
