@@ -37,8 +37,8 @@ const getUser = async (username) => {
 /*
     This function will return the number of posts that the user liked 
 */
-const userLikes = (userId) => {
-    const result = executeQueries(`SELECT * FROM liked_tweets WHERE user_id = ${userId}`)
+const userLikes = async (userId) => {
+    const result = await executeQueries(`SELECT * FROM liked_tweets WHERE user_id = ${userId}`)
 
     if (result.length > 0) {
         return result.length
@@ -121,7 +121,7 @@ const getTweetLikes = async (tweetId) => {
     let responsesLikes = []
 
     let likes_hasNextPage = false
-    let likes_next_pageToken
+    let likes_next_pageToken = ""
     let requestsExceeded = false
 
     await axios.get(`https://api.twitter.com/2/tweets/${tweetId}/liking_users`, {
@@ -255,7 +255,31 @@ const addLikes = async () => {
 /*
     This function will get the rest of the likes and store them in the DB, if there's no token, it means all likes are already in the DB
 */
+
 const updateLikes = async () => {
+    const tweets = await executeQueries("SELECT * FROM tweets WHERE like_count > 0")
+    const likesDB = await executeQueries("SELECT * FROM liked_tweets")
+
+
+    for (const tweet of tweets) {
+        const tweetLikes = await getTweetLikes(tweet.tweet_id)
+        for (const like of tweetLikes.likes) {
+            const userLiked = await executeQueries(`SELECT * FROM liked_tweets WHERE tweet_id = ${tweet.tweet_id} AND user_id = ${like}`)
+
+            if (!userLiked.length > 0) {
+                db.query("INSERT INTO liked_tweets (user_id, tweet_id) VALUES (?, ?)", [like, tweet.tweet_id], (err) => {
+                    if (err) {
+                        console.log(err)
+                    }
+                })
+                break
+            }
+        }
+        
+    }
+}
+
+const updateLikes_1 = async () => {
     const lastChecked = await executeQueries("SELECT * FROM tokens WHERE operation = 'like'")
     const tweets = await executeQueries("SELECT * FROM tweets WHERE like_count > 0")
 

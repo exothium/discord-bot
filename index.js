@@ -32,7 +32,7 @@ client.on('messageCreate', async (message) => {
         message.reply("Likes added into the Database")
     }
     else if (message.content === "!updateTweets") {
-        await updateTweets()
+        await updateTweets(config.TWITTER_PAGE_ID)
         message.reply("Tweets updated successfuly")
     }
     else if (message.content === "!updateLikes") {

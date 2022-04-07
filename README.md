@@ -4,7 +4,6 @@ This discord bot is currently checking whether a user liked or not a specific tw
 
 ## Installation
 
-
 ```bash
 cd ./repository
 npm install
@@ -24,10 +23,11 @@ To make this bot work, you'll need to set up some variables first, you can creat
     "DB_SCHEMA": "string",
 
     "TWITTER_TOKEN": "string",
-    "TWEET_ID": "string",
     "TWITTER_PAGE_ID": "string",
     
     "DISCORD_TOKEN": "string",
     "GUILD_ID": "string"
 }
 ```
+
+The variables that start with DB are the ones for your database, the host, user credentials, port and the database schema itself.
