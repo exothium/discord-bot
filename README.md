@@ -14,7 +14,7 @@ yarn install
 Run `!insertTweets` and `!insertLikes` to get all the tweets and likes into the database, respectively.
 Every time you wanna see how many likes a user has on that page, run the following command:
 
-``shell
+``sh
 !twitter *username*
 ``
 
