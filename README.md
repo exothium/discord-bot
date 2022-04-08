@@ -1,8 +1,8 @@
 # Discord-Twitter
 
-This discord bot is currently checking whether a user liked or not a specific tweet on Twitter
+This discord bot is currently checking how many tweets a user liked on Twitter account
 
-## Installation
+# Installation
 
 ```bash
 cd ./repository
@@ -10,6 +10,13 @@ npm install
 # or
 yarn install
 ```
+
+Run `!insertTweets` and `!insertLikes` to get all the tweets and likes into the database, respectively.
+Every time you wanna see how many likes a user has on that page, run the following command:
+
+``shell
+!twitter *username*
+``
 
 # Variables
 To make this bot work, you'll need to set up some variables first, you can create a `config.json` file inside the root of your repository with the following JSON as an example:
@@ -30,7 +37,7 @@ To make this bot work, you'll need to set up some variables first, you can creat
 }
 ```
 
-#### Database
+#### Database (MySQL 8.0)
 The variables that start with DB are the ones for your database, the host, user credentials, port and the database schema itself.
 
 #### Twitter
