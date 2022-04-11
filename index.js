@@ -1,7 +1,7 @@
-const config = require("./config.json")
+const config = require("./config.json");
 
-const { Intents, Client } = require('discord.js')
-const { getUser, userLikes, addTweets, addLikes, updateTweets, updateLikes } = require('./twitter_Api/twitter')
+const { Intents, Client } = require('discord.js');
+const { getUser, userLikes, addTweets, addLikes, updateTweets, updateLikes } = require('./twitter_Api/twitter');
 
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] })
@@ -10,7 +10,7 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_
 client.on('messageCreate', async (message) => {
     if (message.content.startsWith("!twitter")) {
         const username = message.content.split(' ')[1] // ["!twitter", "username"]
-        
+
         const user = await getUser(username)
 
         if (!user) {
@@ -22,20 +22,16 @@ client.on('messageCreate', async (message) => {
         const likedTweets = await userLikes(user.id)
 
         message.reply(`User @${username} liked ${likedTweets} tweets on Exothium`)
-    }
-    else if (message.content === "!insertTweets") {
+    } else if (message.content === "!insertTweets") {
         await addTweets()
         message.reply("Tweets added into the Database")
-    }
-    else if (message.content === "!insertLikes") {
+    } else if (message.content === "!insertLikes") {
         await addLikes()
         message.reply("Likes added into the Database")
-    }
-    else if (message.content === "!updateTweets") {
+    } else if (message.content === "!updateTweets") {
         await updateTweets(config.TWITTER_PAGE_ID)
         message.reply("Tweets updated successfuly")
-    }
-    else if (message.content === "!updateLikes") {
+    } else if (message.content === "!updateLikes") {
         await updateLikes()
         message.reply("Likes updated successfuly")
     }
@@ -50,8 +46,7 @@ client.on('ready', () => {
     let commands;
     if (guild) {
         commands = guild.commands
-    }
-    else {
+    } else {
         commands = client.application?.commands
     }
 

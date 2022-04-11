@@ -1,9 +1,9 @@
-const { default: axios } = require("axios")
-const db = require("./database/connection")
-const { formatLikesArray, formatTweetsArray } = require("./assets/assets")
-const config = require("../config.json")
+const { default: axios } = require("axios");
+const db = require("./database/connection");
+const { formatLikesArray, formatTweetsArray } = require("./assets/assets");
+const config = require("../config.json");
 
-const twitterToken = config.TWITTER_TOKEN
+const twitterToken = config.TWITTER_TOKEN;
 
 /*
     This function will return the user object
@@ -13,18 +13,18 @@ const twitterToken = config.TWITTER_TOKEN
 const getUser = async (username) => {
     let res_error = false
     let user
-    
+
     // Get the userid
     await axios.get(`https://api.twitter.com/2/users/by/username/${username}`, {
         headers: {
             Authorization: `Bearer ${twitterToken}`
         }
     }).then((res) => user = res.data.data)
-    .catch((err) => {
-        if (err.response) {
-            res_error = true
-        }
-    })
+        .catch((err) => {
+            if (err.response) {
+                res_error = true
+            }
+        })
 
     // Check in the Database how many posts the user has liked 
     if (res_error) {
@@ -96,8 +96,7 @@ const getTweets = async (pageId) => {
 
                 if (res.data.meta.next_token) {
                     tweets_next_PageToken = res.data.meta.next_token
-                }
-                else {
+                } else {
                     tweets_hasNextPage = false
                 }
             }
@@ -163,12 +162,10 @@ const getTweetLikes = async (tweetId) => {
 
                 if (res.data.meta.next_token) {
                     likes_next_pageToken = res.data.meta.next_token
-                }
-                else {
+                } else {
                     likes_hasNextPage = false
                 }
-            }
-            else {
+            } else {
                 likes_hasNextPage = false
             }
         }).catch((err) => {
@@ -194,13 +191,13 @@ const getTweetLikes = async (tweetId) => {
 }
 
 /*
-    This function will add all the tweets into the DB (from scratch)
+    This function will add all the tweets into the DB (from scratch) and also updates existing ones
 */
 const addTweets = async () => {
     const tweets = await getTweets(config.TWITTER_PAGE_ID)
 
     for (const tweet of tweets) {
-        db.query("INSERT INTO tweets (??) VALUES (?)", [Object.keys(tweet), Object.values(tweet)], (err) => {
+        db.query("INSERT INTO tweets (??) VALUES (?) ON DUPLICATE KEY UPDATE tweet_id=VALUES(tweet_id), retweet_count=VALUES(retweet_count), reply_count=VALUES(reply_count), like_count=VALUES(like_count), quote_count=VALUES(quote_count)", [Object.keys(tweet), Object.values(tweet)], (err) => {
             if (err) {
                 console.log(err)
             }
@@ -229,8 +226,7 @@ const addLikes = async () => {
                     }
                 })
             }
-        }
-        else if (request.token.length > 0) {
+        } else if (request.token.length > 0) {
             // It means this tweet wasn't checked because there was an error, insert the likes and the token
             for (const userId of request.likes) {
                 db.query("INSERT INTO liked_tweets (user_id, tweet_id) VALUES (?, ?)", [userId, tweet.tweet_id], (err) => {
@@ -275,7 +271,7 @@ const updateLikes = async () => {
                 break
             }
         }
-        
+
     }
 }
 
@@ -316,8 +312,7 @@ const updateLikes_1 = async () => {
                 }
             }
         }
-    }
-    else {
+    } else {
         console.log("There's no token stored in the DB. Don't know from where to start")
     }
 }
@@ -338,7 +333,7 @@ const updateTweets = async (pageId) => {
                 }
                 break
             }
-        }    
+        }
     }
     console.log("Tweets updated")
 }
