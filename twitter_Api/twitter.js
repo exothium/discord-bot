@@ -326,17 +326,32 @@ const updateTweets = async (pageId) => {
     const currentTweets = await getTweets(pageId)
 
     for (let i = 0; i < currentTweets.length; i++) {
+        let found = false
         for (let j = 0; j < tweetsDB.length; j++) {
             if (currentTweets[i].tweet_id === tweetsDB[j].tweet_id) {
+                found = true
                 if (currentTweets[i].like_count !== tweetsDB[j].like_count) {
                     db.query(`UPDATE tweets SET like_count = ${currentTweets[i].like_count} WHERE tweet_id = ${currentTweets[i].tweet_id}`)
                 }
                 break
             }
         }
+
+        // It means the tweet wasn't in the DB. Add it into the DB
+        if (!found) {
+            db.query("INSERT INTO tweets (??) VALUES (?)", [Object.keys(currentTweets[i]), Object.values(currentTweets[i])], (err) => {
+                if (err) {
+                    console.log(err)
+                }
+            })
+        }
     }
     console.log("Tweets updated")
 }
+
+/*
+    This function will add the last tweet into the DB
+*/
 
 async function executeQueries(query, r) {
     return new Promise(function (resolve, reject) {
