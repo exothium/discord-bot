@@ -220,7 +220,7 @@ const addLikes = async () => {
 
         if (request.token === "") {
             for (const userId of request.likes) {
-                db.query("INSERT INTO liked_tweets (user_id, tweet_id) VALUES (?, ?)", [userId, tweet.tweet_id], (err) => {
+                db.query("INSERT INTO liked_tweets (user_id, tweet_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE user_id=VALUES(user_id), tweet_id=VALUES(tweet_id)", [userId, tweet.tweet_id], (err) => {
                     if (err) {
                         console.log(err)
                     }
