@@ -29,7 +29,17 @@ const formatTweetsArray = (array) => {
     return formated // Example: [ {tweet_id, retweet_count, reply_count, like_count, quote_count}, ...]
 }
 
+const formatRetweetsArray = (array) => {
+    let formatted = []
+    array.forEach((response) => {
+        response.forEach((user) => formatted.push(user.id))
+    })
+
+    return formatted // Example: ["123", "456", "789", ...]
+}
+
 module.exports = {
     formatLikesArray: formatLikesArray,
-    formatTweetsArray: formatTweetsArray
+    formatTweetsArray: formatTweetsArray,
+    formatRetweetsArray: formatRetweetsArray
 }

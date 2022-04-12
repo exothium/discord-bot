@@ -1,7 +1,7 @@
 const config = require("./config.json");
 
 const { Intents, Client } = require('discord.js');
-const { getUser, userLikes, addTweets, addLikes, updateTweets, updateLikes } = require('./twitter_Api/twitter');
+const { getUser, userLikes, addTweets, addLikes, updateTweets, updateLikes, userRetweets } = require('./twitter_Api/twitter');
 
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] })
@@ -22,7 +22,24 @@ client.on('messageCreate', async (message) => {
         const likedTweets = await userLikes(user.id)
 
         message.reply(`User @${username} liked ${likedTweets} tweets on Exothium`)
-    } else if (message.content === "!insertTweets") {
+    }
+    else if (message.content.startsWith("!retweets")) {
+        const username = message.content.split(' ')[1] // ["!twitter", "username"]
+
+        const user = await getUser(username)
+
+        if (!user) {
+            message.reply('User does not exist')
+            return
+        }
+        message.reply('Let me do a quick search')
+
+        const retweets = await userRetweets(user.id)
+
+        message.reply(`User @${username} retweets ${retweets} tweets on Exothium`)
+    } 
+    
+    else if (message.content === "!insertTweets") {
         await addTweets()
         message.reply("Tweets added into the Database")
     } else if (message.content === "!insertLikes") {

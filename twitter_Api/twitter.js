@@ -1,6 +1,6 @@
 const { default: axios } = require("axios");
 const db = require("./database/connection");
-const { formatLikesArray, formatTweetsArray } = require("./assets/assets");
+const { formatLikesArray, formatTweetsArray, formatRetweetsArray } = require("./assets/assets");
 const config = require("../config.json");
 
 const twitterToken = config.TWITTER_TOKEN;
@@ -40,6 +40,15 @@ const getUser = async (username) => {
 const userLikes = async (userId) => {
     const result = await executeQueries(`SELECT * FROM liked_tweets WHERE user_id = ${userId}`)
 
+    if (result.length > 0) {
+        return result.length
+    }
+    return 0
+}
+
+const userRetweets = async (userId) => {
+    const result = await executeQueries(`SELECT * FROM retweets WHERE user_id = ${userId}`)
+    
     if (result.length > 0) {
         return result.length
     }
@@ -350,8 +359,89 @@ const updateTweets = async (pageId) => {
 }
 
 /*
-    This function will add the last tweet into the DB
+    This function will add the retweets into the DB
 */
+
+const addRetweets = async () => {
+    const tweetsDB = await executeQueries("SELECT * FROM tweets WHERE retweet_count > 0")
+
+    // { "tweet_id": tweetId, "retweeted_by": ["123", "456", "789"] }
+    for (const tweet of tweetsDB) {
+        const retweets = await getRetweets(tweet.tweet_id)
+        for (const userId of retweets.retweeted_by) {
+            db.query("INSERT INTO retweets (user_id, tweet_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE user_id=VALUES(user_id), tweet_id=VALUES(tweet_id)", [userId, tweet.tweet_id], (err) => {
+                if (err) {
+                    console.log(err)
+                }
+            })
+        }
+    }
+}
+
+const getRetweets = async (tweetId) => {
+    let hasNextPage = false
+    let nextPageToken = ""
+    let users = []
+
+    await axios.get(`https://api.twitter.com/2/tweets/${tweetId}/retweeted_by`, {
+        headers: {
+            Authorization: `Bearer ${twitterToken}`
+        },
+        params: {
+            max_results: 100
+        }
+    }).then((res) => {
+        if (res.data.meta.result_count > 0) {
+            users.push(res.data.data)
+        }
+
+        if (res.data.meta.next_token) {
+            hasNextPage = true
+            nextPageToken = res.data.meta.next_token
+        }
+    }).catch((err) => {
+        if (err.response) {
+            console.log(`Too many requests in the https://api.twitter.com/2/tweets/${tweetId}/retweeted_by endpoint`)
+            hasNextPage = false
+        }
+    })
+
+    // If has more pages to check
+    while (hasNextPage) {
+        await axios.get(`https://api.twitter.com/2/tweets/${tweetId}/retweeted_by`, {
+            headers: {
+                Authorization: `Bearer ${twitterToken}`
+            },
+            params: {
+                max_results: 100,
+                pagination_token: nextPageToken
+            }
+        }).then((res) => {
+            if (res.data.meta.result_count > 0) {
+                users.push(res.data.data)
+
+                if (res.data.meta.next_token) {
+                    nextPageToken = res.data.meta.next_token
+                }
+                else {
+                    hasNextPage = false
+                }
+            }
+            else {
+                hasNextPage = false
+            }
+        }).catch((err) => {
+            if (err.response) {
+                console.log(`Too many requests in the https://api.twitter.com/2/tweets/${tweetId}/retweeted_by endpoint`)
+                hasNextPage = false
+            }
+        })
+    }
+
+    const formattedArray = formatRetweetsArray(users)
+
+    return { "tweet_id": tweetId, "retweeted_by": formattedArray } // { "tweet_id": tweetId, "retweeted_by": ["123", "456", "789"] }
+}
 
 async function executeQueries(query, r) {
     return new Promise(function (resolve, reject) {
@@ -373,5 +463,6 @@ module.exports = {
     addTweets: addTweets,
     addLikes: addLikes,
     updateTweets: updateTweets,
-    updateLikes: updateLikes
+    updateLikes: updateLikes,
+    userRetweets: userRetweets
 }
