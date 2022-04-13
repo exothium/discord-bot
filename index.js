@@ -8,8 +8,15 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_
 
 
 client.on('messageCreate', async (message) => {
-    if (message.content.startsWith("!twitter")) {
-        const username = message.content.split(' ')[1] // ["!twitter", "username"]
+    if (message.content.startsWith("!likes")) {
+        const messageArray = message.content.split(' ') // ["!likes", "username"]
+
+        if (messageArray.length > 2) {
+            message.reply("The command should look like this: !likes username")
+            return
+        }
+
+        const username = message[1]
 
         const user = await getUser(username)
 
@@ -24,7 +31,14 @@ client.on('messageCreate', async (message) => {
         message.reply(`User @${username} liked ${likedTweets} tweets on Exothium`)
     }
     else if (message.content.startsWith("!retweets")) {
-        const username = message.content.split(' ')[1] // ["!twitter", "username"]
+        const messageArray = message.content.split(' ') // ["!retweets", "username"]
+
+        if (messageArray.length > 2) {
+            message.reply("The command should look like this: !retweets username")
+            return
+        }
+
+        const username = message[1]
 
         const user = await getUser(username)
 
@@ -39,16 +53,19 @@ client.on('messageCreate', async (message) => {
         message.reply(`User @${username} retweets ${retweets} tweets on Exothium`)
     } 
     
-    else if (message.content === "!insertTweets") {
+    else if (message.content === "!insertTweets" && message.member.roles.cache.has(config.ADMIN_ROLE_ID)) {
         await addTweets()
         message.reply("Tweets added into the Database")
-    } else if (message.content === "!insertLikes") {
+    } 
+    else if (message.content === "!insertLikes" && message.member.roles.cache.has(config.ADMIN_ROLE_ID)) {
         await addLikes()
         message.reply("Likes added into the Database")
-    } else if (message.content === "!updateTweets") {
+    } 
+    else if (message.content === "!updateTweets" && message.member.roles.cache.has(config.ADMIN_ROLE_ID)) {
         await updateTweets(config.TWITTER_PAGE_ID)
         message.reply("Tweets updated successfuly")
-    } else if (message.content === "!updateLikes") {
+    } 
+    else if (message.content === "!updateLikes" && message.member.roles.cache.has(config.ADMIN_ROLE_ID)) {
         await updateLikes()
         message.reply("Likes updated successfuly")
     }
