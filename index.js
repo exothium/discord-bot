@@ -16,7 +16,7 @@ client.on('messageCreate', async (message) => {
             return
         }
 
-        const username = message[1]
+        const username = messageArray[1]
 
         const user = await getUser(username)
 
@@ -38,7 +38,7 @@ client.on('messageCreate', async (message) => {
             return
         }
 
-        const username = message[1]
+        const username = messageArray[1]
 
         const user = await getUser(username)
 
