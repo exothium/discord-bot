@@ -1,7 +1,7 @@
 const config = require("./config.json");
 
 const { Intents, Client } = require('discord.js');
-const { getUser, userLikes, addTweets, addLikes, updateTweets, updateLikes, userRetweets } = require('./twitter_Api/twitter');
+const { getUser, userLikes, addTweets, addLikes, addRetweets, updateTweets, updateLikes, userRetweets } = require('./twitter_Api/twitter');
 
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] })
@@ -51,20 +51,24 @@ client.on('messageCreate', async (message) => {
         const retweets = await userRetweets(user.id)
 
         message.reply(`User @${username} retweets ${retweets} tweets on Exothium`)
-    } 
-    
+    }
+
     else if (message.content === "!insertTweets" && message.member.roles.cache.has(config.ADMIN_ROLE_ID)) {
         await addTweets()
         message.reply("Tweets added into the Database")
-    } 
+    }
     else if (message.content === "!insertLikes" && message.member.roles.cache.has(config.ADMIN_ROLE_ID)) {
         await addLikes()
         message.reply("Likes added into the Database")
-    } 
+    }
+    else if (message.content === "!insertRetweets" && message.member.roles.cache.has(config.ADMIN_ROLE_ID)) {
+        await addRetweets()
+        message.reply("Retweets updated successfuly")
+    }
     else if (message.content === "!updateTweets" && message.member.roles.cache.has(config.ADMIN_ROLE_ID)) {
         await updateTweets(config.TWITTER_PAGE_ID)
         message.reply("Tweets updated successfuly")
-    } 
+    }
     else if (message.content === "!updateLikes" && message.member.roles.cache.has(config.ADMIN_ROLE_ID)) {
         await updateLikes()
         message.reply("Likes updated successfuly")
@@ -77,7 +81,7 @@ client.on('ready', () => {
     // Get all the commands from the server and create your own
     const guild = client.guilds.cache.get(config.GUILD_ID)
 
-    let commands;
+    /*let commands;
     if (guild) {
         commands = guild.commands
     } else {
@@ -95,7 +99,7 @@ client.on('ready', () => {
                 type: 3
             }
         ]
-    })
+    })*/
     console.log('Bot is ready')
 })
 

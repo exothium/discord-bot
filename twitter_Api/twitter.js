@@ -48,7 +48,7 @@ const userLikes = async (userId) => {
 
 const userRetweets = async (userId) => {
     const result = await executeQueries(`SELECT * FROM retweets WHERE user_id = ${userId}`)
-    
+
     if (result.length > 0) {
         return result.length
     }
@@ -462,6 +462,7 @@ module.exports = {
     userLikes: userLikes,
     addTweets: addTweets,
     addLikes: addLikes,
+    addRetweets: addRetweets,
     updateTweets: updateTweets,
     updateLikes: updateLikes,
     userRetweets: userRetweets
